@@ -106,10 +106,9 @@ const insert = (list, sortKey, item) => {
   };
 
   if (value <= firstValue) {
-    list.unshift(item);
+    return [item].concat(list);
   } else if (value >= lastValue) {
-    // list[list.length] = item;
-    list.push(item);
+    list[list.length] = item;
   } else {
     const existingIndex = findIndex(list, sortKey)(item);
     if (existingIndex > -1) {
