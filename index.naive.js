@@ -9,7 +9,7 @@ const sort = (list, sortKey) => {
 
 const findIndex = (list, sortKey) => value => {
   // SHOULD OPTIMIZE
-  return list.findIndex(i => getValue(i, sortKey) === value);
+  return list.findIndex(i => getValue(i, sortKey) === getValue(value, sortKey));
 }
 
 const insert = (list, sortKey, item) => {
@@ -38,7 +38,7 @@ export const List = ({ sortKey, initial, initialOrder}) => {
       sortKey,
       initial: insert(items, sortKey, item),
       // You should reverse this bool if your insertion preserve order
-      initialOrder: false
+      initialOrder: true
     })
   }
 }

@@ -8,8 +8,8 @@
     "node": ">=16"
   },
   "scripts": {
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "benchmark": "NODE_OPTIONS=--experimental-vm-modules node benchmark.js"
+    "test": "set NODE_OPTIONS=--experimental-vm-modules jest",
+    "benchmark": "set NODE_OPTIONS=--experimental-vm-modules && node benchmark.js"
   },
   "author": "",
   "license": "ISC",
