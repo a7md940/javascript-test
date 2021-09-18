@@ -1,10 +1,8 @@
-import { pipe, always, applySpec, last } from 'ramda';
-
 const getValue = (obj, prop) => {
   return obj[prop] ? obj[prop] : obj;
 };
 
-const bubbleSort = (arr, sortKey = null) => {
+const bubbleSort = (sortKey) => (arr) => {
   let noSwaps;
   for (let i = arr.length; i > 0; i--) {
     noSwaps = true;
@@ -35,11 +33,11 @@ const binarySearch = (sortedArray, sortKey, value) => {
 
   while (left <= right) {
     let middle = Math.floor((left + right) / 2);
-
-    if ((sortedArray[middle] ? getValue(sortedArray[middle], sortKey) : sortedArray[middle]) === getValue(value, sortKey)) {
+    const midValue = (sortedArray[middle] ? getValue(sortedArray[middle], sortKey) : sortedArray[middle]);
+    if (midValue === getValue(value, sortKey)) {
       // found the key
       return middle;
-    } else if ((sortedArray[middle] ? getValue(sortedArray[middle], sortKey) : sortedArray[middle]) < getValue(value, sortKey)) {
+    } else if (midValue < getValue(value, sortKey)) {
       // continue searching to the right
       left = middle + 1;
     } else {
@@ -55,8 +53,22 @@ const findIndex = (list, sortKey) => value => {
   if (value == null || value == undefined) {
     return -1;
   }
-  if (value - 1 < list.length && list[value - 1] == value) {
-    return value - 1;
+  const val = getValue(value, sortKey);
+  if (typeof val == 'number') {
+    // val is number
+    if (val * -1 > 0) {
+      // val is negative
+      if (val + 1 < list.length && list[val + 1] == val) {
+        // find index as index matches value
+        return val + 1;
+      }
+    } else {
+      // val is positive
+      if (val - 1 < list.length && list[val - 1] == val) {
+        // find index as index matches value
+        return val - 1;
+      }
+    }
   }
 
   return binarySearch(list, sortKey, value);
@@ -64,7 +76,8 @@ const findIndex = (list, sortKey) => value => {
 
 const sortArray = (list, sortKey) => {
   // SHOULD IMPLEMENT
-  return bubbleSort(list, sortKey);
+  const bubbleSortBySortKey = bubbleSort(sortKey);
+  return bubbleSortBySortKey(list, sortKey);
 };
 
 const insert = (list, sortKey, item) => {
@@ -72,6 +85,25 @@ const insert = (list, sortKey, item) => {
   const value = getValue(item, sortKey);
   const firstValue = getValue(list[0], sortKey);
   const lastValue = getValue(list[list.length - 1], sortKey);
+  const getIndexOfDirectNearElement = (list, value) => {
+    let start = 0;
+    let end = list.length - 1;
+
+    while (start <= end) {
+      let middle = Math.floor((start + end) / 2);
+
+      if (start + 1 == end) {
+        if (value <= list[start]) {
+          return start;
+        }
+        return end;
+      } else if (list[middle] < value) {
+        start = middle + 1;
+      } else {
+        end = middle - 1;
+      }
+    }
+  };
 
   if (value <= firstValue) {
     list.unshift(item);
@@ -83,25 +115,6 @@ const insert = (list, sortKey, item) => {
     if (existingIndex > -1) {
       list.splice(existingIndex, 0, item);
     } else {
-      const getIndexOfDirectNearElement = (list, value) => {
-        let start = 0;
-        let end = list.length - 1;
-
-        while (start <= end) {
-          let middle = Math.floor((start + end) / 2);
-
-          if (start + 1 == end) {
-            if (value < list[start]) {
-              return start;
-            }
-            return end;
-          } else if (list[middle] < value) {
-            start = middle + 1;
-          } else {
-            end = middle - 1;
-          }
-        }
-      }
       const index = getIndexOfDirectNearElement(list, value);
       list[index] > value
         ? list.splice(index, 0, item)
